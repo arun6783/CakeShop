@@ -1,49 +1,78 @@
-const redux  = require('redux')
-const createStore = redux.createStore
+const redux = require('redux')
+const reduxLogger = require('redux-logger');
 
-const BUY_CAKE = 'BUY_CAKE'
+const createStore = redux.createStore;
+const combineReducers = redux.combineReducers;
+const applyMiddleware = redux.applyMiddleware;
+const logger = reduxLogger.createLogger();
+
+const BUY_CAKE= 'BUY_CAKE'
+const BUY_ICECREAM= 'BUY_ICECREAM'
+
 
 function buyCake(){
+
     return {
-        type: BUY_CAKE,
-        info : 'First redux action'
+        type: BUY_CAKE
     }
+}
+
+function buyIceCream(){
+
+    return {
+        type: BUY_ICECREAM
+        
+    }
+}
+
+const initialCakeState = {
+    noOfCakes : 10
+}
+
+const initialIceCreamState = {
     
-}
-
-const initialState = {
-    numOfCakes : 10
-
+    noofIceCream: 20
 }
 
 
-const  reducer = (state = initialState, action)=>{
 
+const cakeReducer = (state = initialCakeState, action)=>{
     switch(action.type){
-        case  BUY_CAKE:
-        return {
-            ...state,
-            numOfCakes: state.numOfCakes -1
-        }
-        default: return state
+        case BUY_CAKE:
+            return {
+                ...state,
+                noOfCakes : state.noOfCakes-1
+            }           
+        default : 
+            return state;
     }
-
 }
 
-const store = createStore(reducer)
+const iceCreamReducer = (state = initialIceCreamState, action)=>{
+    switch(action.type){
+           case BUY_ICECREAM:
+            return {
+                ...state,
+                noofIceCream : state.noofIceCream-1
+            }
+        default : 
+            return state;
+    }
+}
 
-console.log('initial state', store.getState())
 
-const unsubscribe = store.subscribe(()=>{
-    console.log('Updated state', store.getState())
+const rootReducer = combineReducers({
+    cake: cakeReducer,
+    iceCream: iceCreamReducer
 })
 
+const store = createStore(rootReducer, applyMiddleware(logger))
 
-store.dispatch(buyCake())
-
-store.dispatch(buyCake())
-
-store.dispatch(buyCake())
-
+console.log('initial state ' , store.getState());
+const unsubscribe = store.subscribe(()=>{});
+store.dispatch(buyCake());
+store.dispatch(buyCake());
+store.dispatch(buyCake());
+store.dispatch(buyIceCream());
+store.dispatch(buyIceCream());
 unsubscribe()
-
